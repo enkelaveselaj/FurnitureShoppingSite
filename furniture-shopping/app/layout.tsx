@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/contexts/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,16 +37,18 @@ export default function RootLayout({
           backgroundColor: "#f5efe6",
         }}
       >
-        {/* Global Header */}
-        <Header title="LuxeWood Furniture" />
+        <CartProvider>
+          {/* Global Header */}
+          <Header title="LuxeWood Furniture" />
 
-        {/* Page Content */}
-        <main style={{ flex: 1 }}>
-          {children}
-        </main>
+          {/* Page Content */}
+          <main style={{ flex: 1 }}>
+            {children}
+          </main>
 
-        {/* Global Footer */}
-        <Footer company="LuxeWood Furniture" />
+          {/* Global Footer */}
+          <Footer company="LuxeWood Furniture" />
+        </CartProvider>
       </body>
     </html>
   );

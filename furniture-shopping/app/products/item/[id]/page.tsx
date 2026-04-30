@@ -164,9 +164,6 @@ export default async function ProductDetails({
               </span>
             </div>
 
-            {/* Product Actions */}
-            <ProductActions product={p} />
-
             {/* Description */}
             <div>
               <h3 className="font-semibold text-lg text-gray-900 mb-3">
@@ -177,7 +174,9 @@ export default async function ProductDetails({
               </p>
             </div>
 
-            
+            {/* Actions */}
+            <ProductActions product={p} />
+
             {/* Trust Badges */}
             <div className="border-t pt-6">
               <div className="grid grid-cols-3 gap-4 text-center">

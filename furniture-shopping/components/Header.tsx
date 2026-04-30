@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
 
 type HeaderProps = {
   title: string;
 };
 
 export default function Header({ title }: HeaderProps) {
+  const { state: cartState } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -37,6 +39,14 @@ export default function Header({ title }: HeaderProps) {
           </Link>
 
           <Link 
+            href="/products" 
+            className="hover:text-[var(--accent)] transition-all duration-300 relative group"
+          >
+            Catalogue
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--accent)] group-hover:w-full transition-all duration-300"></span>
+          </Link>
+
+          <Link 
             href="/about" 
             className="hover:text-[var(--accent)] transition-all duration-300 relative group"
           >
@@ -54,8 +64,22 @@ export default function Header({ title }: HeaderProps) {
 
         </nav>
 
-        {/* CTA Button - Desktop */}
-        <div className="hidden lg:block">
+        {/* Cart & CTA - Desktop */}
+        <div className="hidden lg:flex items-center space-x-4">
+          <Link 
+            href="/cart"
+            className="relative p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 group"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {cartState.itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
+              </span>
+            )}
+          </Link>
+          
           <button className="bg-[var(--accent)] hover:bg-[var(--secondary)] text-[var(--dark)] font-semibold px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
             Shop Now
           </button>
@@ -89,6 +113,13 @@ export default function Header({ title }: HeaderProps) {
               Home
             </Link>
             <Link 
+              href="/products" 
+              className="block py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Catalogue
+            </Link>
+            <Link 
               href="/about" 
               className="block py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
@@ -102,6 +133,26 @@ export default function Header({ title }: HeaderProps) {
             >
               Contact
             </Link>
+            
+            {/* Cart Link */}
+            <Link 
+              href="/cart" 
+              className="flex items-center justify-between py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span>Shopping Cart</span>
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {cartState.itemCount > 0 && (
+                  <span className="bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full px-2 py-1">
+                    {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
+                  </span>
+                )}
+              </div>
+            </Link>
+            
             <button className="w-full bg-[var(--accent)] hover:bg-[var(--secondary)] text-[var(--dark)] font-semibold py-3 rounded-lg transition-all duration-300 mt-4">
               Shop Now
             </button>

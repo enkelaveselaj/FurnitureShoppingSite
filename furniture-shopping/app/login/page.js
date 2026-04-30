@@ -33,7 +33,7 @@ export default function LoginPage() {
         if (session.user.role === "admin") {
           router.push("/admin/products");
         } else {
-          router.push("/profile");
+          router.push("/products");
         }
       } else {
         setError("Invalid email or password");
