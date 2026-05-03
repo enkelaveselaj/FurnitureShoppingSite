@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Link from "next/link";
 import ProductActions from "@/components/ProductActions";
+import ProductReviews from "@/components/ProductReviews";
 import mongoose from "mongoose";
 
 export const revalidate = 10;
@@ -120,25 +121,6 @@ export default async function ProductDetails({
                 )}
               </div>
             </div>
-
-            {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:ring-2 hover:ring-[var(--accent)] transition-all duration-200">
-                  {p.image ? (
-                    <img
-                      src={p.image}
-                      alt={`${p.name} view ${i}`}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="w-8 h-8 bg-gray-200 rounded"></div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Product Info */}
@@ -208,6 +190,11 @@ export default async function ProductDetails({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16">
+          <ProductReviews productId={p._id} />
         </div>
       </div>
     </div>
