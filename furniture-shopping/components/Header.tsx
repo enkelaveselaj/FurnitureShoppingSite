@@ -89,16 +89,19 @@ export default function Header({ title }: HeaderProps) {
             <div className="w-20 h-8 bg-white/20 rounded animate-pulse"></div>
           ) : session ? (
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center">
+              <Link
+                href={session.user?.role === "admin" ? "/admin/profile" : "/profile"}
+                className="flex items-center space-x-2 group"
+              >
+                <div className="w-8 h-8 bg-[var(--accent)] rounded-full flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                   <span className="text-[var(--dark)] font-semibold text-sm">
                     {session.user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
-                <span className="text-sm font-medium hidden xl:block">
+                <span className="text-sm font-medium hidden xl:block group-hover:text-[var(--accent)] transition-colors duration-200">
                   {session.user?.name}
                 </span>
-              </div>
+              </Link>
               <button
                 onClick={() => signOut()}
                 className="text-sm hover:text-[var(--accent)] transition-colors duration-200 font-medium"
@@ -197,7 +200,11 @@ export default function Header({ title }: HeaderProps) {
               <div className="w-full h-10 bg-white/20 rounded animate-pulse mt-4"></div>
             ) : session ? (
               <div className="border-t border-white/10 pt-4 mt-4">
-                <div className="flex items-center justify-between mb-4">
+                <Link
+                  href={session.user?.role === "admin" ? "/admin/profile" : "/profile"}
+                  className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200 mb-4"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-[var(--accent)] rounded-full flex items-center justify-center">
                       <span className="text-[var(--dark)] font-semibold">
@@ -209,7 +216,10 @@ export default function Header({ title }: HeaderProps) {
                       <p className="text-sm text-white/70">{session.user?.email}</p>
                     </div>
                   </div>
-                </div>
+                  <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
                 <button
                   onClick={() => {
                     signOut();
