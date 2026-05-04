@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth";
 
-export async function DELETE(req: Request) {
+export const DELETE = withAuth(async (req: Request) => {
   try {
     const { productId } = await req.json();
     
@@ -52,4 +53,4 @@ export async function DELETE(req: Request) {
     console.error("Error removing item:", error);
     return NextResponse.json({ error: "Error removing item", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-}
+});

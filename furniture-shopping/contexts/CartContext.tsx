@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useReducer, useEffect, ReactNode } from "react";
+import { useSession } from "next-auth/react";
 
 // Types
 interface CartItem {
@@ -124,6 +125,7 @@ const CartContext = createContext<{
 // Provider
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { data: session } = useSession();
 
   // Load cart from API on mount
   useEffect(() => {
@@ -133,7 +135,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Fetch cart from API
   const fetchCart = async () => {
     try {
-      const response = await fetch("/api/cart");
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      const response = await fetch("/api/cart", { 
+        headers,
+        credentials: "same-origin", // Include cookies for session
+      });
       if (response.ok) {
         const data = await response.json();
         dispatch({ type: "LOAD_CART", payload: data.items || [] });
@@ -147,6 +156,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = async (item: CartItem) => {
     try {
       console.log("Adding item to cart:", item);
+      console.log("Current session:", session);
       
       const response = await fetch("/api/cart/add", {
         method: "POST",
@@ -157,6 +167,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           productId: item.productId,
           quantity: item.quantity,
         }),
+        credentials: "same-origin", // Include cookies for session
       });
 
       console.log("API Response status:", response.status);
@@ -165,6 +176,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("API Error:", errorData);
+        
+        // Handle authentication errors specifically
+        if (response.status === 401) {
+          const authError = new Error("You need to be logged in to add items to cart");
+          (authError as any).isAuthError = true;
+          throw authError;
+        }
+        
         throw new Error(`Failed to add item to cart: ${errorData.error || response.statusText}`);
       }
       

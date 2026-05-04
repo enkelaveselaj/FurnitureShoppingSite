@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 interface Review {
   _id: string;
@@ -18,6 +20,10 @@ interface ProductReviewsProps {
 export default function ProductReviews({ productId }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showAuthAlert, setShowAuthAlert] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -41,7 +47,6 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
   }, [productId]);
 
   const [newReview, setNewReview] = useState({
-    name: '',
     rating: 5,
     comment: ''
   });
@@ -66,16 +71,19 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     e.preventDefault();
     
     try {
+      setError("");
+      setShowAuthAlert(false);
+      
       const isEditing = editingReview !== null;
       const url = isEditing ? `/api/reviews/${productId}` : `/api/reviews/${productId}`;
       const method = isEditing ? 'PUT' : 'POST';
       const body = isEditing ? {
         reviewId: editingReview._id,
-        name: newReview.name,
+        name: session?.user?.name || 'Anonymous',
         rating: newReview.rating,
         comment: newReview.comment,
       } : {
-        name: newReview.name,
+        name: session?.user?.name || 'Anonymous',
         rating: newReview.rating,
         comment: newReview.comment,
       };
@@ -97,22 +105,29 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
           setReviews([data.review, ...reviews]);
         }
         
-        setNewReview({ name: '', rating: 5, comment: '' });
+        setNewReview({ rating: 5, comment: '' });
         setEditingReview(null);
         setShowReviewForm(false);
       } else {
         const errorData = await response.json();
-        console.error('Error saving review:', errorData.error);
+        
+        // Handle authentication errors specifically
+        if (response.status === 401) {
+          setShowAuthAlert(true);
+          setError("");
+        } else {
+          setError(errorData.error || "Failed to save review");
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting review:', error);
+      setError(error.message || "Failed to submit review");
     }
   };
 
   const handleEditReview = (review: Review) => {
     setEditingReview(review);
     setNewReview({
-      name: review.name,
       rating: review.rating,
       comment: review.comment
     });
@@ -125,6 +140,9 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
     }
 
     try {
+      setError("");
+      setShowAuthAlert(false);
+      
       const response = await fetch(`/api/reviews/${productId}?reviewId=${reviewId}`, {
         method: 'DELETE',
       });
@@ -133,17 +151,86 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
         setReviews(reviews.filter(r => r._id !== reviewId));
       } else {
         const errorData = await response.json();
-        console.error('Error deleting review:', errorData.error);
+        
+        // Handle authentication errors specifically
+        if (response.status === 401) {
+          setShowAuthAlert(true);
+          setError("");
+        } else {
+          setError(errorData.error || "Failed to delete review");
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting review:', error);
+      setError(error.message || "Failed to delete review");
     }
+  };
+
+  const handleLoginRedirect = () => {
+    router.push("/login");
   };
 
   return (
     <div className="space-y-8">
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
+        
+        {/* Authentication Alert */}
+        {showAuthAlert && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Authentication Required
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>You need to be logged in to {editingReview ? 'edit' : 'submit'} reviews.</p>
+                  <div className="mt-3 flex space-x-2">
+                    <button
+                      onClick={handleLoginRedirect}
+                      className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-medium py-1 px-3 rounded text-sm transition-colors"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => setShowAuthAlert(false)}
+                      className="text-yellow-700 hover:text-yellow-800 font-medium py-1 px-3 rounded text-sm transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+                <button
+                  onClick={() => setError("")}
+                  className="mt-2 text-red-700 hover:text-red-800 text-sm underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {isLoading ? (
           <div className="text-center py-8">
@@ -208,20 +295,6 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
           <form onSubmit={handleSubmitReview} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                required
-                value={newReview.name}
-                onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-                placeholder="Enter your name"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Rating
               </label>
               <div className="flex space-x-2">
@@ -270,7 +343,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                 onClick={() => {
                   setShowReviewForm(false);
                   setEditingReview(null);
-                  setNewReview({ name: '', rating: 5, comment: '' });
+                  setNewReview({ rating: 5, comment: '' });
                 }}
                 className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-lg transition-all duration-300"
               >

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth";
 
-export async function PUT(req: Request) {
+export const PUT = withAuth(async (req: Request) => {
   try {
     const { productId, quantity } = await req.json();
     
@@ -59,4 +60,4 @@ export async function PUT(req: Request) {
     console.error("Error updating cart:", error);
     return NextResponse.json({ error: "Error updating cart", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-}
+});

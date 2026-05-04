@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth";
 
-export async function DELETE(req: Request) {
+export const DELETE = withAuth(async (req: Request) => {
   try {
     // Get user ID from cookies
     const cookieHeader = req.headers.get('cookie');
@@ -27,4 +28,4 @@ export async function DELETE(req: Request) {
     console.error("Error clearing cart:", error);
     return NextResponse.json({ error: "Error clearing cart", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-}
+});

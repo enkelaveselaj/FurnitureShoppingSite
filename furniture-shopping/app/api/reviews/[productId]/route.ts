@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Review from "@/models/Review";
 import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 export async function GET(
   request: Request,
@@ -35,17 +37,26 @@ export async function POST(
   { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { productId } = await params;
     const body = await request.json();
-    const { name, rating, comment } = body;
+    const { rating, comment } = body;
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
     }
 
-    if (!name || !rating || !comment) {
+    if (!rating || !comment) {
       return NextResponse.json(
-        { error: "Name, rating, and comment are required" },
+        { error: "Rating and comment are required" },
         { status: 400 }
       );
     }
@@ -61,7 +72,7 @@ export async function POST(
 
     const review = await Review.create({
       product: new mongoose.Types.ObjectId(productId),
-      name,
+      name: session.user.name,
       rating,
       comment,
     });
@@ -81,17 +92,26 @@ export async function PUT(
   { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { productId } = await params;
     const body = await request.json();
-    const { reviewId, name, rating, comment } = body;
+    const { reviewId, rating, comment } = body;
 
     if (!mongoose.Types.ObjectId.isValid(productId) || !mongoose.Types.ObjectId.isValid(reviewId)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    if (!name || !rating || !comment) {
+    if (!rating || !comment) {
       return NextResponse.json(
-        { error: "Name, rating, and comment are required" },
+        { error: "Rating and comment are required" },
         { status: 400 }
       );
     }
@@ -107,7 +127,7 @@ export async function PUT(
 
     const review = await Review.findByIdAndUpdate(
       reviewId,
-      { name, rating, comment },
+      { name: session.user.name, rating, comment },
       { new: true }
     );
 
@@ -130,6 +150,15 @@ export async function DELETE(
   { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { productId } = await params;
     const { searchParams } = new URL(request.url);
     const reviewId = searchParams.get('reviewId');

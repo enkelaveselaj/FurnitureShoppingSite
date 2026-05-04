@@ -3,14 +3,31 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function AdminProducts() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check authentication and admin role
+    if (status === "loading") return;
+    
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+    
+    if (session.user?.role !== "admin") {
+      router.push("/");
+      return;
+    }
+    
     fetchProducts();
-  }, []);
+  }, [session, status, router]);
 
   const fetchProducts = async () => {
     try {
@@ -37,12 +54,12 @@ export default function AdminProducts() {
     }
   };
 
-  if (loading) {
+  if (status === "loading" || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading products...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );

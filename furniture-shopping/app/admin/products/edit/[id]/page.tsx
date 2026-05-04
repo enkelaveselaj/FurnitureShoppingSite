@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function EditProduct() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(false);
@@ -13,8 +15,21 @@ export default function EditProduct() {
   const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
+    // Check authentication and admin role
+    if (status === "loading") return;
+    
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+    
+    if (session.user?.role !== "admin") {
+      router.push("/");
+      return;
+    }
+    
     fetchProduct();
-  }, []);
+  }, [session, status, router]);
 
   const fetchProduct = async () => {
     try {
@@ -73,12 +88,12 @@ export default function EditProduct() {
     }
   };
 
-  if (fetchLoading) {
+  if (status === "loading" || fetchLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading product...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );

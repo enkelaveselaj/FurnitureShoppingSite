@@ -1,24 +1,59 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 export async function POST(req: Request) {
   try {
+    // Check authentication
+    let session;
+    try {
+      // Check if session cookie exists
+      const cookieHeader = req.headers.get('cookie');
+      console.log("Cart API - Cookie header:", cookieHeader);
+      
+      session = await getServerSession(authOptions);
+      console.log("Cart API - Session check:", { 
+        session: session ? "exists" : "null", 
+        hasUser: !!session?.user, 
+        userId: session?.user?.id,
+        userName: session?.user?.name,
+        cookies: cookieHeader
+      });
+      
+      if (!session || !session.user) {
+        console.log("Cart API - Authentication failed - no session or user");
+        return NextResponse.json(
+          { error: "Authentication required - please login" },
+          { status: 401 }
+        );
+      }
+      
+      if (!session.user.id) {
+        console.log("Cart API - Authentication failed - no user ID");
+        return NextResponse.json(
+          { error: "Invalid user session" },
+          { status: 401 }
+        );
+      }
+    } catch (sessionError) {
+      console.error("Cart API - Session check error:", sessionError);
+      return NextResponse.json(
+        { error: "Session verification failed" },
+        { status: 500 }
+      );
+    }
+
     const { productId, quantity = 1 } = await req.json();
     
-    // Get user ID from cookies
+    // Get user ID from session
+    const userId = session!.user.id;
+
+    // Get current cart items from cookie
+    let cartItems = [];
     const cookieHeader = req.headers.get('cookie');
     const cookies = cookieHeader ? Object.fromEntries(
       cookieHeader.split(';').map(cookie => cookie.trim().split('='))
     ) : {};
-    
-    let userId = cookies.temp_user_id;
-    
-    if (!userId) {
-      // Create new temporary user ID
-      userId = "temp_user_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-    }
-
-    // Get current cart items from cookie
-    let cartItems = [];
     const cartCookie = cookies.cart_items;
     
     if (cartCookie) {
@@ -30,7 +65,7 @@ export async function POST(req: Request) {
     }
     
     // Check if item already exists
-    const existingItemIndex = cartItems.findIndex(item => item.productId === productId);
+    const existingItemIndex = cartItems.findIndex((item: any) => item.productId === productId);
     
     if (existingItemIndex >= 0) {
       // Update quantity
