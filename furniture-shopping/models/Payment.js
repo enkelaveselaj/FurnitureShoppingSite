@@ -50,9 +50,10 @@ const paymentSchema = new mongoose.Schema({
   },
 });
 
-paymentSchema.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
+// Removed problematic pre-save middleware
+// paymentSchema.pre("save", function (next) {
+//   this.updatedAt = Date.now();
+//   next();
+// });
 
 export default mongoose.models.Payment || mongoose.model("Payment", paymentSchema);

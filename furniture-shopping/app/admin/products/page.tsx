@@ -78,11 +78,18 @@ export default function AdminProducts() {
               Manage your furniture inventory
             </p>
           </div>
-          <Link href="/admin/products/create">
-            <Button variant="primary" size="lg">
-              Add New Product
-            </Button>
-          </Link>
+          <div className="flex space-x-3">
+            <Link href="/admin/orders">
+              <Button variant="outline" size="lg">
+                View Orders
+              </Button>
+            </Link>
+            <Link href="/admin/products/create">
+              <Button variant="primary" size="lg">
+                Add New Product
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Products Grid */}

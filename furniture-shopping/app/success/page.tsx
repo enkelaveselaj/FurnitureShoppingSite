@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import { useCart } from "@/contexts/CartContext";
 
 export default function SuccessPage() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const cart = useCart();
   const [loading, setLoading] = useState(true);
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
@@ -27,6 +29,12 @@ export default function SuccessPage() {
         if (response.ok) {
           const data = await response.json();
           setPaymentDetails(data);
+          
+          // Clear the cart after successful payment
+          if (cart && cart.clearCart) {
+            await cart.clearCart();
+            console.log("Cart cleared after successful payment");
+          }
         } else {
           console.error("Failed to verify payment");
         }

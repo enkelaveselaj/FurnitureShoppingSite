@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
-import { withAuth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/authOptions";
 
-export const DELETE = withAuth(async (req: Request) => {
+export const DELETE = async (req: Request) => {
   try {
-    // Get user ID from cookies
-    const cookieHeader = req.headers.get('cookie');
-    const cookies = cookieHeader ? Object.fromEntries(
-      cookieHeader.split(';').map(cookie => cookie.trim().split('='))
-    ) : {};
+    // Get NextAuth session
+    const session = await getServerSession(authOptions);
     
-    const userId = cookies.temp_user_id;
-    
-    if (!userId) {
-      return NextResponse.json({ error: "No user found" }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
     const response = NextResponse.json({ 
@@ -28,4 +24,4 @@ export const DELETE = withAuth(async (req: Request) => {
     console.error("Error clearing cart:", error);
     return NextResponse.json({ error: "Error clearing cart", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }
-});
+};

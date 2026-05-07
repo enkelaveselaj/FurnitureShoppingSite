@@ -97,6 +97,7 @@ export default function CartPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log('Server error response:', errorData);
         throw new Error(errorData.error || "Failed to process checkout");
       }
 

@@ -24,6 +24,7 @@ export default function OrdersPage() {
   const { data: session, status } = useSession();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -47,6 +48,33 @@ export default function OrdersPage() {
 
     fetchOrders();
   }, [session, status]);
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeletingOrderId(orderId);
+    
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Remove the deleted order from the state
+        setOrders(orders.filter(order => order._id !== orderId));
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to delete order");
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      alert("Failed to delete order. Please try again.");
+    } finally {
+      setDeletingOrderId(null);
+    }
+  };
 
   if (status === "loading" || loading) {
     return (
@@ -115,6 +143,13 @@ export default function OrdersPage() {
                       }`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
+                      <button
+                        onClick={() => handleDeleteOrder(order._id)}
+                        disabled={deletingOrderId === order._id}
+                        className="mt-2 ml-2 px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {deletingOrderId === order._id ? 'Deleting...' : 'Delete'}
+                      </button>
                     </div>
                   </div>
 

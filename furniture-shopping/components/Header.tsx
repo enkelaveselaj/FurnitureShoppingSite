@@ -70,8 +70,8 @@ export default function Header({ title }: HeaderProps) {
 
         {/* Cart & Auth - Desktop */}
         <div className="hidden lg:flex items-center space-x-4">
-          {/* Show cart and favorites only for non-admin users */}
-          {session?.user?.role !== "admin" && (
+          {/* Show cart, favorites, and orders only for logged-in non-admin users */}
+          {session && session.user?.role !== "admin" && (
             <>
               <Link 
                 href="/cart"
@@ -92,6 +92,14 @@ export default function Header({ title }: HeaderProps) {
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </Link>
+              <Link
+                href="/orders"
+                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 group"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                 </svg>
               </Link>
             </>
@@ -206,6 +214,20 @@ export default function Header({ title }: HeaderProps) {
                     </span>
                   )}
                 </div>
+              </Link>
+            )}
+            
+            {/* Orders Link - Only show for logged-in non-admin users */}
+            {session?.user?.role !== "admin" && (
+              <Link 
+                href="/orders" 
+                className="flex items-center justify-between py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>My Orders</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
               </Link>
             )}
             

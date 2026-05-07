@@ -190,6 +190,9 @@ export default function AdminProfilePage() {
               <Link href="/admin/products">
                 <Button variant="outline">Products</Button>
               </Link>
+              <Link href="/admin/orders">
+                <Button variant="outline">Orders</Button>
+              </Link>
               <Link href="/admin/profile">
                 <Button>Profile</Button>
               </Link>
@@ -292,6 +295,9 @@ export default function AdminProfilePage() {
                     <div className="flex space-x-3">
                       <Link href="/admin/products">
                         <Button variant="outline">Manage Products</Button>
+                      </Link>
+                      <Link href="/admin/orders">
+                        <Button variant="outline">Manage Orders</Button>
                       </Link>
                       <Button onClick={() => setEditing(true)}>
                         Edit Profile

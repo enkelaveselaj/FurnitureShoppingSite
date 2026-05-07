@@ -1,14 +1,19 @@
-import { stripe } from "@/lib/stripe";
 import { connectDB } from "@/lib/db";
 import Payment from "@/models/Payment";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/authOptions";
+import Stripe from 'stripe';
 
 export async function POST(req) {
   try {
+    console.log('Checkout API - Starting checkout process');
+    
+    // Get NextAuth session
     const session = await getServerSession(authOptions);
+    console.log('Checkout API - Session found:', session ? 'Yes' : 'No');
+    
     if (!session?.user?.email) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      return Response.json({ error: "Authentication required" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -19,6 +24,11 @@ export async function POST(req) {
     }
 
     await connectDB();
+
+    // Initialize Stripe
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+    });
 
     // Create line items for Stripe
     const lineItems = items.map(item => ({
@@ -37,6 +47,7 @@ export async function POST(req) {
     const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     // Create Stripe checkout session
+    console.log('Creating Stripe checkout session...');
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
