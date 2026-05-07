@@ -77,6 +77,40 @@ export default function CartPage() {
     }
   };
 
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cartState.items.map(item => ({
+            productId: item.productId,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to process checkout");
+      }
+
+      const data = await response.json();
+      
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+    } catch (error) {
+      console.error("Checkout error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to process checkout. Please try again.";
+      alert(errorMessage);
+    }
+  };
+
   if (cartState.items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
@@ -204,7 +238,7 @@ export default function CartPage() {
               </div>
 
               <div className="space-y-3">
-                <Button size="lg" className="w-full">
+                <Button size="lg" className="w-full" onClick={handleCheckout}>
                   Proceed to Checkout
                 </Button>
                 
