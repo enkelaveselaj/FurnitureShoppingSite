@@ -70,20 +70,32 @@ export default function Header({ title }: HeaderProps) {
 
         {/* Cart & Auth - Desktop */}
         <div className="hidden lg:flex items-center space-x-4">
-          <Link 
-            href="/cart"
-            className="relative p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 group"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-            {cartState?.itemCount && cartState.itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
-              </span>
-            )}
-          </Link>
-          
+          {/* Show cart and favorites only for non-admin users */}
+          {session?.user?.role !== "admin" && (
+            <>
+              <Link 
+                href="/cart"
+                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 group"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {cartState?.itemCount && cartState.itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/favorites"
+                className="relative p-2 rounded-lg hover:bg-white/10 transition-colors duration-200 group"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </Link>
+            </>
+          )}
           {/* Authentication Buttons */}
           {status === "loading" ? (
             <div className="w-20 h-8 bg-white/20 rounded animate-pulse"></div>
@@ -176,24 +188,26 @@ export default function Header({ title }: HeaderProps) {
               Contact
             </Link>
             
-            {/* Cart Link */}
-            <Link 
-              href="/cart" 
-              className="flex items-center justify-between py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <span>Shopping Cart</span>
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {cartState?.itemCount && cartState.itemCount > 0 && (
-                  <span className="bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full px-2 py-1">
-                    {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
-                  </span>
-                )}
-              </div>
-            </Link>
+            {/* Cart Link - Only show for non-admin users */}
+            {session?.user?.role !== "admin" && (
+              <Link 
+                href="/cart" 
+                className="flex items-center justify-between py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>Shopping Cart</span>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  {cartState?.itemCount && cartState.itemCount > 0 && (
+                    <span className="bg-[var(--accent)] text-[var(--dark)] text-xs font-bold rounded-full px-2 py-1">
+                      {cartState.itemCount > 99 ? '99+' : cartState.itemCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            )}
             
             {/* Mobile Authentication Section */}
             {status === "loading" ? (

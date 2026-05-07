@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "./Button";
 import { useCart } from "@/contexts/CartContext";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface ProductActionsProps {
   product: {
@@ -18,8 +19,10 @@ export default function ProductActions({ product }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState("");
   const [showAuthAlert, setShowAuthAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const cart = useCart();
   const router = useRouter();
+  const { data: session } = useSession();
   
   if (!cart) {
     return null; // or handle loading state
@@ -31,6 +34,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
     try {
       setError("");
       setShowAuthAlert(false);
+      setSuccessMessage("");
       
       await addItem({
         productId: product._id,
@@ -42,6 +46,9 @@ export default function ProductActions({ product }: ProductActionsProps) {
       
       // Reset quantity after adding
       setQuantity(1);
+      
+      // Show success message
+      setSuccessMessage("Added to cart!");
     } catch (error: any) {
       console.error("Failed to add item to cart:", error);
       
@@ -49,8 +56,47 @@ export default function ProductActions({ product }: ProductActionsProps) {
       if (error.isAuthError) {
         setShowAuthAlert(true);
         setError("");
+        setSuccessMessage("");
       } else {
         setError(error.message || "Failed to add item to cart");
+      }
+    }
+  };
+
+  const handleAddToFavorites = async () => {
+    try {
+      setError("");
+      setShowAuthAlert(false);
+      setSuccessMessage("");
+      
+      const response = await fetch("/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product._id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to add to favorites");
+      }
+
+      // Show success message
+      setSuccessMessage("Added to favorites!");
+    } catch (error: any) {
+      console.error("Failed to add to favorites:", error);
+      
+      // Handle authentication errors specifically
+      if (error.isAuthError) {
+        setShowAuthAlert(true);
+        setError("");
+        setSuccessMessage("");
+      } else {
+        setError(error.message || "Failed to add to favorites");
       }
     }
   };
@@ -96,13 +142,29 @@ export default function ProductActions({ product }: ProductActionsProps) {
         </div>
       )}
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414 1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-green-800">{successMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414 1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="ml-3">
@@ -143,6 +205,15 @@ export default function ProductActions({ product }: ProductActionsProps) {
           </button>
         </div>
       </div>
+
+      {/* Add to Favorites Button */}
+      <Button
+        onClick={handleAddToFavorites}
+        className="w-full"
+        size="lg"
+      >
+        Add to Favorites
+      </Button>
 
       {/* Add to Cart Button */}
       <Button
