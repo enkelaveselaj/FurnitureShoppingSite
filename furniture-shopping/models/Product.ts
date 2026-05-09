@@ -5,8 +5,12 @@ const ProductSchema = new mongoose.Schema({
   price: Number,
   description: String,
   image: String,
+  category: {
+    type: String,
+    enum: ['sofa', 'chair', 'table', 'bed', 'storage', 'decor'],
+    default: 'decor'
+  },
 });
-
 
 export default mongoose.models.Product ||
   mongoose.model("Product", ProductSchema);

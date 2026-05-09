@@ -175,14 +175,12 @@ export default function CreateProduct() {
                     required
                   >
                     <option value="">Select a category</option>
-                    <option value="Tables">Tables</option>
-                    <option value="Chairs">Chairs</option>
-                    <option value="Sofas">Sofas</option>
-                    <option value="Beds">Beds</option>
-                    <option value="Storage">Storage</option>
-                    <option value="Lighting">Lighting</option>
-                    <option value="Decor">Decor</option>
-                    <option value="Outdoor">Outdoor</option>
+                    <option value="sofa">Sofas</option>
+                    <option value="chair">Chairs</option>
+                    <option value="table">Tables</option>
+                    <option value="bed">Beds</option>
+                    <option value="storage">Storage</option>
+                    <option value="decor">Decor</option>
                   </select>
                 </div>
               </div>

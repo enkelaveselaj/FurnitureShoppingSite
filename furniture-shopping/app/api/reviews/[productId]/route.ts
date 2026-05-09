@@ -72,6 +72,7 @@ export async function POST(
 
     const review = await Review.create({
       product: new mongoose.Types.ObjectId(productId),
+      userId: session.user.id,
       name: session.user.name,
       rating,
       comment,
@@ -125,17 +126,27 @@ export async function PUT(
 
     await connectDB();
 
-    const review = await Review.findByIdAndUpdate(
-      reviewId,
-      { name: session.user.name, rating, comment },
-      { new: true }
-    );
+    const review = await Review.findById(reviewId);
 
     if (!review) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ review });
+    // Check if user owns this review
+    if (review.userId.toString() !== session.user.id) {
+      return NextResponse.json(
+        { error: "You can only edit your own reviews" },
+        { status: 403 }
+      );
+    }
+
+    const updatedReview = await Review.findByIdAndUpdate(
+      reviewId,
+      { name: session.user.name, rating, comment },
+      { new: true }
+    );
+
+    return NextResponse.json({ review: updatedReview });
   } catch (error) {
     console.error("Error updating review:", error);
     return NextResponse.json(
@@ -169,11 +180,21 @@ export async function DELETE(
 
     await connectDB();
 
-    const review = await Review.findByIdAndDelete(reviewId);
+    const review = await Review.findById(reviewId);
 
     if (!review) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
+
+    // Check if user owns this review
+    if (review.userId.toString() !== session.user.id) {
+      return NextResponse.json(
+        { error: "You can only delete your own reviews" },
+        { status: 403 }
+      );
+    }
+
+    await Review.findByIdAndDelete(reviewId);
 
     return NextResponse.json({ message: "Review deleted successfully" });
   } catch (error) {

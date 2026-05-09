@@ -8,6 +8,7 @@ export async function GET() {
   await connectDB();
 
   const products = await Product.find();
+  console.log("GET products - returning:", products);
 
   return NextResponse.json(products);
 }
@@ -33,8 +34,10 @@ export async function POST(req: Request) {
     await connectDB();
 
     const body = await req.json();
+    console.log("Creating product with data:", body);
 
     const product = await Product.create(body);
+    console.log("Created product:", product);
     return NextResponse.json(product, { status: 201 });
   } catch (error: any) {
     console.error("CREATE PRODUCT ERROR:", error);

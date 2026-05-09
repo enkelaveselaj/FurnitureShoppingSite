@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 
 interface Review {
   _id: string;
+  userId: string;
   name: string;
   rating: number;
   comment: string;
@@ -168,6 +169,10 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 
   const handleLoginRedirect = () => {
     router.push("/login");
+  };
+
+  const isReviewOwner = (review: Review) => {
+    return session?.user?.id === review.userId;
   };
 
   return (
@@ -370,20 +375,22 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                     </span>
                   </div>
                 </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEditReview(review)}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteReview(review._id)}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium"
-                  >
-                    Delete
-                  </button>
-                </div>
+                {session && isReviewOwner(review) && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEditReview(review)}
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteReview(review._id)}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
               <p className="text-gray-700 leading-relaxed">{review.comment}</p>
             </div>
