@@ -24,8 +24,14 @@ export async function GET(
       return NextResponse.json({ message: "Not found" }, { status: 404 });
     }
 
-    console.log("Product found:", product);
-    return NextResponse.json(product);
+    // Fix image URL to include full path
+    const productWithFixedUrl = {
+      ...product.toObject(),
+      image: product.image ? (product.image.startsWith('http') ? product.image : `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${product.image}`) : product.image
+    };
+    
+    console.log("Product found:", productWithFixedUrl);
+    return NextResponse.json(productWithFixedUrl);
   } catch (error) {
     console.log("Invalid ObjectId format:", id);
     return NextResponse.json({ message: "Invalid ID format" }, { status: 400 });

@@ -18,6 +18,9 @@ export default function CreateProduct() {
     image: "",
     category: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     // Check authentication and admin role
@@ -37,6 +40,65 @@ export default function CreateProduct() {
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      setUploadError("Invalid file type. Only JPEG, PNG, and WebP are allowed.");
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setUploadError("File too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setImageFile(file);
+    setUploadError("");
+    
+    // Auto-upload the file
+    await uploadFile(file);
+  };
+
+  const uploadFile = async (file: File) => {
+    setUploading(true);
+    setUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setForm({ ...form, image: data.url });
+      } else {
+        setUploadError(data.error || "Upload failed");
+      }
+    } catch (error) {
+      setUploadError("Upload failed. Please try again.");
+      console.error("Upload error:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setForm({ ...form, image: "" });
+    setUploadError("");
   };
 
   const handleSubmit = async (e: any) => {
@@ -185,42 +247,85 @@ export default function CreateProduct() {
                 </div>
               </div>
 
-              {/* Image URL */}
+              {/* Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
+                  Product Image *
                 </label>
-                <input
-                  type="url"
-                  name="image"
-                  value={form.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Enter a URL for the product image. Leave empty to use a placeholder.
-                </p>
-              </div>
-
-              {/* Image Preview */}
-              {form.image && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Preview
-                  </label>
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
-                    <img
-                      src={form.image}
-                      alt="Product preview"
-                      className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                
+                <div className="space-y-4">
+                  {/* File Upload Area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors duration-200">
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading}
                     />
+                    <label 
+                      htmlFor="image-upload"
+                      className="cursor-pointer flex flex-col items-center space-y-2"
+                    >
+                      <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <span className="text-gray-600 font-medium">
+                        {uploading ? "Uploading..." : "Click to upload image"}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        JPEG, PNG, or WebP (max 5MB)
+                      </span>
+                    </label>
                   </div>
+
+                  {/* Upload Error */}
+                  {uploadError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm">{uploadError}</p>
+                    </div>
+                  )}
+
+                  {/* Upload Progress */}
+                  {uploading && (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-sm text-gray-600">Uploading image...</span>
+                    </div>
+                  )}
+
+                  {/* Image Preview */}
+                  {(form.image || imageFile) && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Image Preview
+                        </label>
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div className="border border-gray-200 rounded-lg overflow-hidden">
+                        <img
+                          src={form.image || (imageFile ? URL.createObjectURL(imageFile) : "")}
+                          alt="Product preview"
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
+                      {imageFile && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          Selected: {imageFile.name} ({(imageFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Form Actions */}
               <div className="flex flex-col sm:flex-row gap-4 pt-6">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
+import ProductCard from "@/components/ProductCard";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -66,119 +67,64 @@ export default function AdminProducts() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--light)] to-white">
+    <div className="min-h-screen bg-gray-50">
       <div className="container-custom py-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Product Management
-            </h1>
-            <p className="text-gray-600">
-              Manage your furniture inventory
-            </p>
-          </div>
-          <div className="flex space-x-3">
-            <Link href="/admin/orders">
-              <Button variant="outline" size="lg">
-                View Orders
-              </Button>
-            </Link>
-            <Link href="/admin/products/create">
-              <Button variant="primary" size="lg">
-                Add New Product
-              </Button>
-            </Link>
+        <div className="mb-8 border-b border-gray-200 pb-6">
+          <h1 className="text-3xl font-light text-gray-900 mb-2">
+            Product Management
+          </h1>
+          <p className="text-gray-600">
+            Manage your furniture inventory and product catalog
+          </p>
+        </div>
+
+        {/* Actions Bar */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="text-sm text-gray-600">
+              {products.length} products in inventory
+            </div>
+            <div className="flex gap-3">
+              <Link href="/admin/products/create">
+                <button className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-5 py-2.5 rounded-md transition-colors duration-200">
+                  Add New Product
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-light text-gray-900 mb-2">
               No products yet
             </h3>
             <p className="text-gray-600 mb-6">
-              Start by adding your first product to the inventory
+              Start by adding your first product to inventory
             </p>
             <Link href="/admin/products/create">
-              <Button variant="secondary" size="lg">
+              <button className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6 py-3 rounded-md transition-colors duration-200">
                 Create Your First Product
-              </Button>
+              </button>
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <div key={product._id} className="card bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                {/* Product Image */}
-                <div className="relative h-48 bg-gradient-to-br from-[var(--light)] to-gray-100 rounded-t-xl overflow-hidden">
-                  {product.image ? (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop";
-                      }}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <svg className="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                  )}
-                  
-                  {/* Category Badge */}
-                  {product.category && (
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-[var(--primary)] text-white text-xs px-2 py-1 rounded-full">
-                        {product.category}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Product Info */}
-                <div className="p-6">
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {product.description}
-                  </p>
-
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-bold text-[var(--primary)]">
-                      ${product.price}
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex space-x-2">
-                    <Link href={`/admin/products/edit/${product._id}`} className="flex-1">
-                      <Button variant="outline" size="sm" fullWidth>
-                        Edit
-                      </Button>
-                    </Link>
-                    <Button 
-                      variant="danger" 
-                      size="sm" 
-                      fullWidth
-                      onClick={() => handleDelete(product._id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <ProductCard 
+                key={product._id} 
+                product={product} 
+                isAdmin={true}
+                onEdit={(id) => router.push(`/admin/products/edit/${id}`)}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )}

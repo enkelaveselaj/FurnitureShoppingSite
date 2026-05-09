@@ -8,9 +8,16 @@ export async function GET() {
   await connectDB();
 
   const products = await Product.find();
-  console.log("GET products - returning:", products);
+  
+  // Fix image URLs to include full path
+  const productsWithFixedUrls = products.map((product: any) => ({
+    ...product.toObject(),
+    image: product.image ? (product.image.startsWith('http') ? product.image : `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${product.image}`) : product.image
+  }));
+  
+  console.log("GET products - returning:", productsWithFixedUrls);
 
-  return NextResponse.json(products);
+  return NextResponse.json(productsWithFixedUrls);
 }
 
 export async function POST(req: Request) {
