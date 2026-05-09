@@ -66,6 +66,14 @@ export default function Header({ title }: HeaderProps) {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--accent)] group-hover:w-full transition-all duration-300"></span>
           </Link>
 
+          <Link 
+            href="/faq" 
+            className="hover:text-[var(--accent)] transition-all duration-300 relative group"
+          >
+            FAQ
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--accent)] group-hover:w-full transition-all duration-300"></span>
+          </Link>
+
         </nav>
 
         {/* Cart & Auth - Desktop */}
@@ -194,6 +202,13 @@ export default function Header({ title }: HeaderProps) {
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
+            </Link>
+            <Link 
+              href="/faq" 
+              className="block py-2 px-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              FAQ
             </Link>
             
             {/* Cart Link - Only show for non-admin users */}
