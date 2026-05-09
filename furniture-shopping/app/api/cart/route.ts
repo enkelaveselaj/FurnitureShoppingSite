@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import { connectDB } from "@/lib/mongodb";
+import Product from "@/models/Product";
 
 // GET user's cart
 export async function GET(request: Request) {
@@ -31,6 +33,25 @@ export async function GET(request: Request) {
         cartItems = JSON.parse(decodeURIComponent(cartCookie));
       } catch (error) {
         cartItems = [];
+      }
+    }
+
+    // Refresh product data for all cart items
+    if (cartItems.length > 0) {
+      await connectDB();
+      
+      for (let i = 0; i < cartItems.length; i++) {
+        const item = cartItems[i];
+        try {
+          const product = await Product.findById(item.productId);
+          if (product) {
+            cartItems[i].name = product.name;
+            cartItems[i].price = product.price;
+            cartItems[i].image = product.image;
+          }
+        } catch (error) {
+          console.error(`Error refreshing product data for ${item.productId}:`, error);
+        }
       }
     }
 

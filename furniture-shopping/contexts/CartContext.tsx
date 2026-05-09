@@ -206,12 +206,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ productId }),
+        credentials: "same-origin", // Include cookies for session
       });
 
       if (response.ok) {
         await fetchCart(); // Refresh cart after removing
       } else {
-        throw new Error("Failed to remove item from cart");
+        const errorData = await response.json();
+        throw new Error(`Failed to remove item from cart: ${errorData.error || response.statusText}`);
       }
     } catch (error) {
       console.error("Failed to remove item:", error);
@@ -227,12 +229,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ productId, quantity }),
+        credentials: "same-origin", // Include cookies for session
       });
 
       if (response.ok) {
         await fetchCart(); // Refresh cart after updating
       } else {
-        throw new Error("Failed to update item quantity");
+        const errorData = await response.json();
+        throw new Error(`Failed to update item quantity: ${errorData.error || response.statusText}`);
       }
     } catch (error) {
       console.error("Failed to update quantity:", error);
@@ -244,6 +248,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch("/api/cart/clear", {
         method: "DELETE",
+        credentials: "same-origin", // Include cookies for session
       });
 
       if (response.ok) {

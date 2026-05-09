@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import { connectDB } from "@/lib/mongodb";
+import Product from "@/models/Product";
 
 export async function POST(req: Request) {
   try {
@@ -68,16 +70,39 @@ export async function POST(req: Request) {
     const existingItemIndex = cartItems.findIndex((item: any) => item.productId === productId);
     
     if (existingItemIndex >= 0) {
-      // Update quantity
+      // Update quantity and refresh product data
+      await connectDB();
+      const product = await Product.findById(productId);
+      
+      if (!product) {
+        return NextResponse.json(
+          { error: "Product not found" },
+          { status: 404 }
+        );
+      }
+      
       cartItems[existingItemIndex].quantity += quantity;
+      cartItems[existingItemIndex].name = product.name;
+      cartItems[existingItemIndex].price = product.price;
+      cartItems[existingItemIndex].image = product.image;
     } else {
-      // Add new item (we'll need product details - for now create a simple item)
+      // Fetch actual product details from database
+      await connectDB();
+      const product = await Product.findById(productId);
+      
+      if (!product) {
+        return NextResponse.json(
+          { error: "Product not found" },
+          { status: 404 }
+        );
+      }
+      
       const newItem = {
         productId,
         quantity,
-        name: "Product " + productId, // We'll need to fetch actual product details
-        price: 450, // Default price - we'll need to fetch actual product
-        image: "https://via.placeholder.com/300"
+        name: product.name,
+        price: product.price,
+        image: product.image
       };
       cartItems.push(newItem);
     }
