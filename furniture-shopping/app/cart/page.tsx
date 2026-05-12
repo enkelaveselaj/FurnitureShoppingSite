@@ -90,7 +90,7 @@ export default function CartPage() {
             name: item.name,
             price: item.price,
             quantity: item.quantity,
-            image: item.image,
+            image: item.image && item.image.startsWith('http') ? item.image : undefined,
           })),
         }),
       });
@@ -102,6 +102,11 @@ export default function CartPage() {
       }
 
       const data = await response.json();
+      
+      // Validate URL before redirecting
+      if (!data.url || typeof data.url !== 'string') {
+        throw new Error("Invalid checkout URL received from server");
+      }
       
       // Redirect to Stripe checkout
       window.location.href = data.url;

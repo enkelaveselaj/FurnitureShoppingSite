@@ -60,6 +60,12 @@ export async function POST(req) {
       },
     });
 
+    console.log('Stripe session created:', {
+      id: stripeSession.id,
+      url: stripeSession.url,
+      payment_intent: stripeSession.payment_intent
+    });
+
     // Create payment record in database
     const payment = await Payment.create({
       userId: session.user.id,
@@ -71,6 +77,14 @@ export async function POST(req) {
       customerEmail: session.user.email,
       stripePaymentIntentId: stripeSession.payment_intent,
     });
+
+    // Validate Stripe session URL before returning
+    if (!stripeSession.url) {
+      console.error('Stripe session URL is null or undefined');
+      return Response.json({ 
+        error: "Failed to create valid checkout session" 
+      }, { status: 500 });
+    }
 
     return Response.json({ 
       url: stripeSession.url,
