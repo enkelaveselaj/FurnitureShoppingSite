@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/db";
 import Payment from "@/models/Payment";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
-import Stripe from 'stripe';
+import { stripe } from "@/lib/stripe";
 
 export async function POST(req) {
   try {
@@ -24,11 +24,6 @@ export async function POST(req) {
     }
 
     await connectDB();
-
-    // Initialize Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20',
-    });
 
     // Create line items for Stripe
     const lineItems = items.map(item => ({
