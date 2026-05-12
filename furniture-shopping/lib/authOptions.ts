@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/db";
 
 // Explicitly load environment variables for server-side
 import { config } from 'dotenv';

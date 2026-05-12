@@ -127,10 +127,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { data: session } = useSession();
 
-  // Load cart from API on mount
+  // Load cart from API when user is authenticated
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (session) {
+      fetchCart();
+    }
+  }, [session]);
 
   // Fetch cart from API
   const fetchCart = async () => {
@@ -143,12 +145,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
         headers,
         credentials: "same-origin", // Include cookies for session
       });
+      
       if (response.ok) {
         const data = await response.json();
         dispatch({ type: "LOAD_CART", payload: data.items || [] });
+      } else if (response.status === 401) {
+        // User is not authenticated, clear cart
+        console.log("User not authenticated, clearing cart");
+        dispatch({ type: "CLEAR_CART" });
       }
     } catch (error) {
       console.error("Failed to fetch cart:", error);
+      // Clear cart on error to prevent stale data
+      dispatch({ type: "CLEAR_CART" });
     }
   };
 

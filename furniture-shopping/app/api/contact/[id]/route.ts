@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
+import { connectDB } from "@/lib/db";
 import Contact from "@/models/Contact";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";

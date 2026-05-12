@@ -4,10 +4,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    console.log("Registration request received");
-    
     const body = await req.json();
-    console.log("Request body:", { ...body, password: "[REDACTED]" });
 
     if (!body.name || !body.email || !body.password) {
       return Response.json(
@@ -16,37 +13,40 @@ export async function POST(req) {
       );
     }
 
-    console.log("Connecting to database...");
     await connectDB();
-    console.log("Database connected successfully");
 
-    console.log("Checking if user exists...");
     const existingUser = await User.findOne({ email: body.email });
 
     if (existingUser) {
-      console.log("User already exists:", body.email);
       return Response.json(
         { error: "User already exists" },
         { status: 400 }
       );
     }
 
-    console.log("Hashing password...");
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
-    console.log("Creating new user...");
-    const newUser = await User.create({
+    await User.create({
       name: body.name,
       email: body.email,
       password: hashedPassword,
       role: "user",
     });
 
-    console.log("User created successfully:", newUser.email);
     return Response.json({ message: "User created successfully" });
   } catch (error) {
-    console.error("Registration error:", error);
-    console.error("Error stack:", error.stack);
+    console.error("Registration error:", error.message);
+    
+    // Handle specific database connection errors
+    if (error.message.includes("Database connection failed")) {
+      return Response.json(
+        { 
+          error: "Database connection failed. Please ensure MongoDB is running.",
+          details: "MongoDB service is not available"
+        },
+        { status: 503 }
+      );
+    }
     
     return Response.json(
       { 
