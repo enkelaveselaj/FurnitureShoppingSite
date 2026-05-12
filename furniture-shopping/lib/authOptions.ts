@@ -1,8 +1,18 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
+
+// Explicitly load environment variables for server-side
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+
+// Debug environment variables
+console.log('🔍 Environment Check:');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? '✅ SET' : '❌ NOT SET');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? '✅ SET' : '❌ NOT SET');
 
 export const authOptions: NextAuthOptions = {
   session: { 
@@ -23,6 +33,10 @@ export const authOptions: NextAuthOptions = {
   },
 
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
     CredentialsProvider({
       credentials: {
         email: {},
@@ -72,6 +86,30 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
       }
       return session;
+    },
+
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        await connectDB();
+        
+        // Check if user already exists
+        let existingUser = await User.findOne({ email: user.email });
+        
+        if (!existingUser) {
+          // Create new user from Google OAuth
+          existingUser = await User.create({
+            name: user.name,
+            email: user.email,
+            password: "", // OAuth users don't have passwords
+            role: "user",
+          });
+        }
+        
+        // Update user.id to be the MongoDB ObjectId
+        user.id = existingUser._id.toString();
+        user.role = existingUser.role;
+      }
+      return true;
     },
   },
 };
