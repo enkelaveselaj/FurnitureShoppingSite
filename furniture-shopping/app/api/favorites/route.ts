@@ -23,7 +23,10 @@ export async function GET() {
       .populate('product')
       .sort({ createdAt: -1 });
 
-    return NextResponse.json(favorites);
+    // Filter out favorites with null products (deleted products)
+    const validFavorites = favorites.filter(fav => fav.product !== null);
+
+    return NextResponse.json(validFavorites);
   } catch (error) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(

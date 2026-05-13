@@ -18,6 +18,18 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, isAdmin, onEdit, onDelete }: ProductCardProps) {
   const { data: session } = useSession();
+  
+  // Defensive check for null/undefined product
+  if (!product) {
+    return (
+      <div className="card">
+        <div className="p-6">
+          <p className="text-gray-500">Product not found</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="card group">
       {/* Product Image */}
