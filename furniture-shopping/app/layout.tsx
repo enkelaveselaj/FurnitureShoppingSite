@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LuxeWood Furniture",
+  title: "DreamLiving Furniture",
   description: "Modern furniture for elegant living",
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
         <Providers>
           <CartProvider>
             {/* Global Header */}
-            <Header title="LuxeWood Furniture" />
+            <Header title="DreamLiving Furniture" />
 
             {/* Page Content */}
             <main style={{ flex: 1 }}>
@@ -49,7 +49,7 @@ export default function RootLayout({
             </main>
 
             {/* Global Footer */}
-            <Footer company="LuxeWood Furniture" />
+            <Footer company="DreamLiving Furniture" />
           </CartProvider>
         </Providers>
       </body>

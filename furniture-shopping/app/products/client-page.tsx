@@ -125,7 +125,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--light)] to-white">
       {/* Hero Section */}
-      <section 
+      <section
         className="section relative overflow-hidden"
         style={{
           backgroundImage: "linear-gradient(135deg, rgba(44, 24, 16, 0.85), rgba(139, 69, 19, 0.75)), url('https://images.unsplash.com/photo-1556025728-ef9ce8d2b3a6')",
@@ -133,14 +133,14 @@ export default function ProductsPage() {
           backgroundPosition: "center",
         }}
       >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_40%)] opacity-70 pointer-events-none"></div>
         <div className="container-custom min-h-[40vh] flex items-center justify-center text-white">
           <div className="text-center space-y-6">
             <h1 className="hero-title text-white mb-6">
               Our <span className="text-[var(--accent)]">Collection</span>
             </h1>
-            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl">
-              Discover our handcrafted furniture pieces, 
-              each telling a story of quality and elegance.
+            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+              Discover our handcrafted furniture pieces, each telling a story of quality and elegance.
             </p>
             <div className="text-center">
               <span className="text-[var(--accent)] font-semibold text-lg">
@@ -152,26 +152,21 @@ export default function ProductsPage() {
       </section>
 
       {/* Filters Section */}
-      <section className="section bg-white border-b">
+      <section className="section bg-white border-b py-12">
         <div className="container-custom">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            {/* Search */}
-            <div className="w-full lg:w-1/3">
+          <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr] xl:grid-cols-[2fr_1fr_0.8fr] items-center">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
-            </div>
-
-            {/* Category Filter */}
-            <div className="w-full lg:w-1/4">
               <select
                 value={selectedCategory}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {categories.map(category => (
                   <option key={category.value} value={category.value}>
@@ -179,14 +174,10 @@ export default function ProductsPage() {
                   </option>
                 ))}
               </select>
-            </div>
-
-            {/* Price Filter */}
-            <div className="w-full lg:w-1/4">
               <select
                 value={selectedPriceRange}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedPriceRange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {priceRanges.map(range => (
                   <option key={range.value} value={range.value}>
@@ -196,13 +187,14 @@ export default function ProductsPage() {
               </select>
             </div>
 
-            {/* Clear Filters */}
-            <button
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-            >
-              Clear Filters
-            </button>
+            <div className="flex items-center justify-end">
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 rounded-2xl border border-gray-200 hover:bg-gray-200 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -212,7 +204,7 @@ export default function ProductsPage() {
         <div className="container-custom">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-16">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
@@ -221,17 +213,17 @@ export default function ProductsPage() {
                 No products found
               </h3>
               <p className="text-gray-600 mb-4">
-                Try adjusting your search or filters
+                Try adjusting your search or filters.
               </p>
               <button
                 onClick={clearFilters}
-                className="text-[var(--primary)] hover:underline"
+                className="text-[var(--primary)] font-semibold hover:underline"
               >
-                Clear all filters
+                Reset filters
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}

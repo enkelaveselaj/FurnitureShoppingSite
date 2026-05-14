@@ -98,13 +98,13 @@ export default function FAQPage() {
 
   const categories = ['all', 'ordering', 'shipping', 'products', 'returns', 'warranty', 'account'];
 
-  const filteredFAQs = selectedCategory === 'all' 
-    ? faqs 
+  const filteredFAQs = selectedCategory === 'all'
+    ? faqs
     : faqs.filter(faq => faq.category === selectedCategory);
 
   const toggleExpanded = (index: number) => {
-    setExpandedItems(prev => 
-      prev.includes(index) 
+    setExpandedItems(prev =>
+      prev.includes(index)
         ? prev.filter(i => i !== index)
         : [...prev, index]
     );
@@ -113,20 +113,26 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section 
+      <section
         className="section relative overflow-hidden"
         style={{
-          backgroundImage: "linear-gradient(135deg, rgba(44, 24, 16, 0.85), rgba(139, 69, 19, 0.75)), url('https://images.unsplash.com/photo-1586022076324-8b6e0c5e2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA&auto=format&fit=crop&w=2070&q=80')",
+          backgroundImage: "linear-gradient(135deg, rgba(44, 24, 16, 0.9), rgba(139, 69, 19, 0.8)), url('https://images.unsplash.com/photo-1586022076324-8b6e0c5e2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA&auto=format&fit=crop&w=2070&q=80')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="container-custom min-h-[40vh] flex items-center justify-center text-white">
-          <div className="text-center space-y-6">
+        <div className="container-custom min-h-[50vh] flex items-center justify-center text-white relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
+          <div className="text-center space-y-6 relative z-10">
+            <div className="inline-block mb-4">
+              <span className="bg-[var(--accent)] text-white text-sm font-semibold px-6 py-2 rounded-full uppercase tracking-wider shadow-lg">
+                Help Center
+              </span>
+            </div>
             <h1 className="hero-title text-white mb-6">
               Frequently Asked <span className="text-[var(--accent)]">Questions</span>
             </h1>
-            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl">
+            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
               Find answers to common questions about our furniture, ordering, and services.
             </p>
           </div>
@@ -134,21 +140,20 @@ export default function FAQPage() {
       </section>
 
       {/* FAQ Content */}
-      <section className="section bg-gradient-to-br from-white to-[var(--light)]">
+      <section className="section bg-gradient-to-br from-white to-[var(--light)] py-20">
         <div className="container-custom py-8">
-          {/* Category Filter */}
-          <div className="mb-8">
+          <div className="mb-12">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm font-medium text-gray-700">Filter by category:</span>
+              <span className="text-sm font-semibold text-gray-700">Filter by category:</span>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                    className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                       selectedCategory === category
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        ? 'bg-[var(--primary)] text-white shadow-lg hover:bg-[var(--secondary)]'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:border-[var(--accent)] hover:text-[var(--accent)]'
                     }`}
                   >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -156,75 +161,78 @@ export default function FAQPage() {
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* FAQ Items */}
-          <div className="space-y-4">
-            {filteredFAQs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <button
-                  onClick={() => toggleExpanded(index)}
-                  className="w-full text-left p-6 hover:bg-gray-50 transition-colors duration-200"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        {faq.question}
-                      </h3>
-                      <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md mt-2">
-                        {faq.category.charAt(0).toUpperCase() + faq.category.slice(1)}
-                      </span>
+            <div className="space-y-4">
+              {filteredFAQs.map((faq, index) => (
+                <div key={index} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <button
+                    onClick={() => toggleExpanded(index)}
+                    className="w-full text-left p-6 hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          {faq.question}
+                        </h3>
+                        <span className="inline-block px-3 py-1 bg-[var(--light)] text-[var(--primary)] text-xs font-medium rounded-full mt-2">
+                          {faq.category.charAt(0).toUpperCase() + faq.category.slice(1)}
+                        </span>
+                      </div>
+                      <div className="ml-4 flex-shrink-0">
+                        <svg
+                          className={`w-6 h-6 text-[var(--accent)] transition-transform duration-300 ${
+                            expandedItems.includes(index) ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <svg 
-                        className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-                          expandedItems.includes(index) ? 'rotate-180' : ''
-                        }`} 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </button>
-                
-                {expandedItems.includes(index) && (
-                  <div className="px-6 pb-6 border-t border-gray-200">
-                    <div className="pt-4">
-                      <p className="text-gray-700 leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+                  </button>
 
-          {/* Contact Support */}
-          <div className="mt-12 bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <div className="max-w-2xl mx-auto">
-              <h3 className="text-xl font-medium text-gray-900 mb-4">
-                Still have questions?
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Can't find the answer you're looking for? Our customer support team is here to help.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/contact"
-                  className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6 py-3 rounded-md transition-colors duration-200"
-                >
-                  Contact Support
-                </Link>
-                <Link
-                  href="/products"
-                  className="bg-white hover:bg-gray-50 text-gray-900 font-medium px-6 py-3 rounded-md border border-gray-300 transition-colors duration-200"
-                >
-                  Browse Products
-                </Link>
+                  {expandedItems.includes(index) && (
+                    <div className="px-6 pb-6 border-t border-gray-200">
+                      <div className="pt-4">
+                        <p className="text-gray-700 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16 bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] rounded-2xl shadow-2xl p-8 text-center text-white">
+              <div className="max-w-2xl mx-auto">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">
+                  Still have questions?
+                </h3>
+                <p className="text-gray-100 mb-6">
+                  Can't find the answer you're looking for? Our customer support team is here to help.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link
+                    href="/contact"
+                    className="bg-white hover:bg-gray-100 text-gray-900 font-semibold px-8 py-3 rounded-full transition-colors duration-300 shadow-lg"
+                  >
+                    Contact Support
+                  </Link>
+                  <Link
+                    href="/products"
+                    className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-full border-2 border-white transition-colors duration-300"
+                  >
+                    Browse Products
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

@@ -56,25 +56,32 @@ export default function Contact() {
     <div>
 
       {/* HERO SECTION */}
-      <section 
+      <section
         className="section relative overflow-hidden"
         style={{
-          backgroundImage: "linear-gradient(135deg, rgba(44, 24, 16, 0.85), rgba(139, 69, 19, 0.75)), url('https://images.unsplash.com/photo-1604326173788-719c8e7c1a6a')",
+          backgroundImage: "linear-gradient(135deg, rgba(44, 24, 16, 0.9), rgba(139, 69, 19, 0.8)), url('https://images.unsplash.com/photo-1604326173788-719c8e7c1a6a')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
 
-        <div className="container-custom min-h-[50vh] flex items-center justify-center text-white">
+        <div className="container-custom min-h-[60vh] flex items-center justify-center text-white relative">
 
-          <div className="text-center space-y-6">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
+
+          <div className="text-center space-y-6 relative z-10">
+            <div className="inline-block mb-4">
+              <span className="bg-[var(--accent)] text-white text-sm font-semibold px-6 py-2 rounded-full uppercase tracking-wider shadow-lg">
+                Contact Us
+              </span>
+            </div>
+
             <h1 className="hero-title text-white mb-6">
               Get in <span className="text-[var(--accent)]">Touch</span>
             </h1>
 
-            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl">
-              We'd love to hear from you. Whether you have a question about our products, 
-              need design advice, or want to discuss a custom project.
+            <p className="hero-subtitle text-gray-100 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+              We'd love to hear from you. Whether you have a question about our products, need design advice, or want to discuss a custom project.
             </p>
           </div>
 
@@ -83,15 +90,18 @@ export default function Contact() {
       </section>
 
       {/* CONTACT FORM & INFO SECTION */}
-      <section className="section bg-gradient-to-br from-white to-[var(--light)]">
+      <section className="section bg-gradient-to-br from-white to-[var(--light)] py-20">
 
         <div className="container-custom">
           <div className="grid lg:grid-cols-3 gap-12">
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="card bg-white p-8 lg:p-12 shadow-2xl">
+              <div className="card bg-white p-8 lg:p-12 shadow-2xl hover:shadow-3xl transition-shadow duration-300 border border-gray-100">
                 <div className="mb-8">
+                  <span className="bg-[var(--primary)] text-white text-sm font-semibold px-4 py-2 rounded-full mb-4 inline-block">
+                    Send Message
+                  </span>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                     Send us a Message
                   </h2>
@@ -148,7 +158,7 @@ export default function Contact() {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="John Doe"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200 hover:border-[var(--accent)]"
                         required
                       />
                     </div>
@@ -163,7 +173,7 @@ export default function Contact() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="john@example.com"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200 hover:border-[var(--accent)]"
                         required
                       />
                     </div>
@@ -179,7 +189,7 @@ export default function Contact() {
                       value={formData.subject}
                       onChange={handleChange}
                       placeholder="How can we help you?"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200 hover:border-[var(--accent)]"
                     />
                   </div>
 
@@ -193,12 +203,12 @@ export default function Contact() {
                       onChange={handleChange}
                       placeholder="Tell us more about your project or question..."
                       rows={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200 resize-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all duration-200 resize-none hover:border-[var(--accent)]"
                       required
                     />
                   </div>
 
-                  <button 
+                  <button
                     type="submit"
                     disabled={isSubmitting}
                     className="btn-primary w-full bg-[var(--primary)] hover:bg-[var(--secondary)] text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -218,22 +228,19 @@ export default function Contact() {
 
             {/* Contact Information */}
             <div className="space-y-8">
-              {/* Contact Card */}
-              <div className="card bg-white p-8 shadow-xl">
+              <div className="card bg-white p-8 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-gray-100">
                 <div className="space-y-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
 
-                  <h3 className="font-bold text-xl text-gray-900">
-                    Visit Our Showroom
-                  </h3>
+                  <h3 className="font-bold text-xl text-gray-900">Visit Our Showroom</h3>
 
                   <div className="space-y-4 text-gray-600">
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-start space-x-3 p-3 bg-[var(--light)] rounded-xl border border-gray-200">
                       <svg className="w-5 h-5 text-[var(--accent)] mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -244,7 +251,7 @@ export default function Contact() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 p-3 bg-[var(--light)] rounded-xl border border-gray-200">
                       <svg className="w-5 h-5 text-[var(--accent)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
@@ -254,26 +261,23 @@ export default function Contact() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 p-3 bg-[var(--light)] rounded-xl border border-gray-200">
                       <svg className="w-5 h-5 text-[var(--accent)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                       <div>
-                        <p className="font-medium">hello@luxewood.com</p>
+                        <p className="font-medium">hello@dreamliving.com</p>
                         <p className="text-sm">24/7 Email Support</p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
 
           </div>
         </div>
-
       </section>
-
     </div>
   );
 }
